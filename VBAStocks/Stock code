@@ -1,0 +1,71 @@
+Sub StockData()
+    Dim results As Integer
+    Dim LastRow As Long
+    Dim YearlyChange As Double
+    Dim PercentChange As Double
+    Dim TotalStockVolume As Double
+    
+    For Each WS In Worksheets
+    'Dim PercentChg As Double
+    'Dim SummaryTable As Integer
+         'SummaryTable = 4
+    
+        'Adding Titles to Cells
+        WS.Cells(1, 9).Value = "Ticker"
+        WS.Cells(1, 10).Value = "YearlyChange"
+        WS.Cells(1, 11).Value = "PercentChange"
+        WS.Cells(1, 12).Value = "TotalStockVolume"
+    
+        results = 2
+        openingprice = WS.Cells(2, 3).Value
+        LastRow = WS.Cells(Rows.Count, 1).End(xlUp).Row
+        YearlyChange = 0
+        PercentChange = 0
+        TotalStockVolume = 0
+        'Looping Through one year of Stock
+    
+    
+        For i = 2 To LastRow
+            TotalStockVolume = TotalStockVolume + WS.Cells(i, 7).Value
+            If WS.Cells(i + 1, 1).Value <> WS.Cells(i, 1).Value Then
+            WS.Cells(results, 9).Value = WS.Cells(i, 1).Value
+            YearlyChange = WS.Cells(i, 6).Value - openingprice
+            openingprice = WS.Cells(i + 1, 3).Value
+            WS.Cells(results, 10).Value = YearlyChange
+            WS.Cells(results, 12).Value = TotalStockVolume
+           
+                 'Caculate PercentChange
+                If (WS.Cells(i, 6).Value = 0 And openingprice = 0) Then
+                PercentChange = 0
+                ElseIf (WS.Cells(i, 6).Value <> 0 And openingprice = 0) Then
+                PercentChange = 1
+                Else: PercentChange = (WS.Cells(i, 6).Value - openingprice) / (openingprice)
+                WS.Cells(results, 11).Value = PercentChange
+                WS.Cells(results, 11).NumberFormat = "0.00%"
+                End If
+              
+            results = results + 1
+            YearlyChange = 0
+            PercentChange = 0
+            TotalStockVolume = 0
+            End If
+        
+        
+        YearlyChange = YearlyChange + (WS.Cells(i, 10))
+              
+        
+        Next i
+        
+        LastRowSummary = WS.Cells(Rows.Count, 10).End(xlUp).Row
+        For i = 2 To LastRowSummary
+            If (WS.Cells(i, Column + 10).Value > 0) Then
+                WS.Cells(i, Column + 10).Interior.ColorIndex = 4
+            ElseIf WS.Cells(i, Column + 10).Value < 0 Then
+                WS.Cells(i, Column + 10).Interior.ColorIndex = 3
+            End If
+            
+        Next i
+        
+    Next WS
+    
+End Sub
